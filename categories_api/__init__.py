@@ -1,10 +1,11 @@
 from flask import Flask
 from flask_restful import Resource, Api, reqparse
 from flask_httpauth import HTTPBasicAuth
-from categories_api import users
 from werkzeug.security import check_password_hash
+from urllib.parse import urlparse
 import re
 
+from categories_api import users
 
 app = Flask(__name__)
 api = Api(app)
@@ -13,7 +14,6 @@ auth = HTTPBasicAuth()
 @app.route('/categories.txt')
 def serve_file():
     return open('/usr/src/app/categories.txt', 'r').read()
-
 
 @auth.verify_password
 def verify_password(username, password):
@@ -62,6 +62,12 @@ class Add(Resource):
         parser.add_argument('domain', required=True)
 
         args = parser.parse_args()
+        
+        if '/' in args['domain']:
+                args['domain'] = urlparse(args['domain']).netloc
+        if not args['domain'] or '.' not in args['domain']:
+            return {'message': 'Domain can not be parsed', 'data': args}, 400
+        
         a = parse_file()
 
         key_list = list(a.keys())
@@ -85,17 +91,22 @@ class Remove(Resource):
         parser.add_argument('domain', required=True)
 
         args = parser.parse_args()
+
+        if '/' in args['domain']:
+                args['domain'] = urlparse(args['domain']).netloc
+        if not args['domain'] or '.' not in args['domain']:
+            return {'message': 'Domain can not be parsed', 'data': args}, 400
+        
         a = parse_file()
 
         key_list = list(a.keys())
-        if args['category'] in key_list:
+        if args['category'] in key_list:    
             if args['domain'] in a[args['category']]:
                 a[args['category']].remove(args['domain'])
                 encode_file(a)
-                return {'message': 'Domain removed', 'data': args}, 201
+                return {'message': 'Domain removed', 'data': args}, 200
             return {'message': 'Domain not in Category', 'data': args}, 400
         return {'message': 'Category invalid', 'data': args}, 400
-
 
 api.add_resource(Add, '/add')
 api.add_resource(Remove, '/remove')
