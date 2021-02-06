@@ -1,13 +1,44 @@
 from flask import Flask
 from flask_restful import Resource, Api, reqparse
 
+import re
+
+
 app = Flask(__name__)
+api = Api(app)
 
 @app.route('/categories.txt')
-def hello_world():
-    return open('/var/www/categories.txt', 'r').read()
+def serve_file():
+    return open('/usr/src/app/categories.txt', 'r').read()
 
+def parse_file():
+    results = {}
+    with open('/usr/src/app/categories.txt', 'r') as cat_file:
+        cur_cat = None
+        for line in cat_file:
+            m = re.search(r'(?<=define\ category\ )\w+', line)
+            if m:
+                new_cat = m.group(0)
+                cur_cat = new_cat
+                results[cur_cat] = []
+            else:
+                m = re.search(r'(?<=end)', line)
+                if m:
+                    cur_cat = None
+                else:
+                    m = line.strip()
+                    if m and cur_cat:
+                        results[cur_cat].append(m)
+    return(results)
 
+def encode_file(content):
+    key_list = list(content.keys())
+    with open('/usr/src/app/categories.txt', 'w') as cat_file:
+        for key in key_list:
+            cat_file.write("define category "+key+"\n")
+            for domain in content[key]:
+                cat_file.write("      "+domain+"\n")
+            cat_file.write("end\n\n")
 
 class Add(Resource):
 
@@ -18,21 +49,37 @@ class Add(Resource):
         parser.add_argument('domain', required=True)
 
         args = parser.parse_args()
+        a = parse_file()
 
-        return {'message': 'Device registered', 'data': args}, 201
-
+        key_list = list(a.keys())
+        if args['category'] in key_list:
+            if args['domain'] not in a[args['category']]:
+                a[args['category']].append(args['domain'])
+                encode_file(a)
+                return {'message': 'Domain added', 'data': args}, 201
+            return {'message': 'Domain already in Category', 'data': args}, 400
+        return {'message': 'Category invalid', 'data': args}, 400
 
 class Remove(Resource):
 
-    def delete(self, identifier):
-        
+    def delete(self):
+
         parser = reqparse.RequestParser()
 
         parser.add_argument('category', required=True)
         parser.add_argument('domain', required=True)
 
         args = parser.parse_args()
-        return {'message': 'Device not found', 'data': args}, 201
+        a = parse_file()
+
+        key_list = list(a.keys())
+        if args['category'] in key_list:
+            if args['domain'] in a[args['category']]:
+                a[args['category']].remove(args['domain'])
+                encode_file(a)
+                return {'message': 'Domain removed', 'data': args}, 201
+            return {'message': 'Domain not in Category', 'data': args}, 400
+        return {'message': 'Category invalid', 'data': args}, 400
 
 
 api.add_resource(Add, '/add')

@@ -1,12 +1,12 @@
-
 define category HTTP_whitelist
       transpaulo.com.br
       transcaxias.com.br
       tecmartransportes.com.br
 end
- 
+
 define category FTP_whitelist
-      tintasrenner-deco.com.br   
+      tintasrenner-deco.com.br
       bertin.com.br
       gsqa.eluxinfo.com.br
 end
+
