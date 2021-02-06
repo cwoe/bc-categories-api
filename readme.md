@@ -12,4 +12,4 @@ Path | Method | Auth | Parameters
 --- | --- | --- | ---
 /categories.txt | GET | None | 
 /add | POST | Basic | category, domain
-/remove | DELETE | Basic | category. domainw
+/remove | DELETE | Basic | category. domain
