@@ -1,17 +1,15 @@
-## Methods
+# Local Categories API for BlueCoat/Symantec Proxies
 
-/categories.txt - GET - Serve File
-    No Auth
+## Description
 
-/add - POST - Add to Category
-    Parameters:
-        category: string
-        domain: string
-    Auth Basic
+Allows the editing of a local categories database via API calls.
 
-/remove - DELETE - Remove from Category
-    Parameters:
-        category: string
-        domain: string
-    Auth Basic
+This can be used to automatically resolve white-/blacklisting related tickets, if properly integrated with a ticket system.
 
+## Allowed Methods
+
+Path | Method | Auth | Parameters
+--- | --- | --- | ---
+/categories.txt | GET | None | 
+/add | POST | Basic | category, domain
+/remove | DELETE | Basic | category. domainw
