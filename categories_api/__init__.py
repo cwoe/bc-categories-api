@@ -1,15 +1,26 @@
 from flask import Flask
 from flask_restful import Resource, Api, reqparse
-
+from flask_httpauth import HTTPBasicAuth
+from categories_api import users
+from werkzeug.security import check_password_hash
 import re
 
 
 app = Flask(__name__)
 api = Api(app)
+auth = HTTPBasicAuth()
 
 @app.route('/categories.txt')
 def serve_file():
     return open('/usr/src/app/categories.txt', 'r').read()
+
+
+@auth.verify_password
+def verify_password(username, password):
+    key_list = list(users.users.keys())
+    if username in key_list:
+        if check_password_hash(users.users[username], password):
+            return username
 
 def parse_file():
     results = {}
@@ -42,6 +53,8 @@ def encode_file(content):
 
 class Add(Resource):
 
+    decorators = [auth.login_required]
+
     def post(self):
         parser = reqparse.RequestParser()
 
@@ -61,6 +74,8 @@ class Add(Resource):
         return {'message': 'Category invalid', 'data': args}, 400
 
 class Remove(Resource):
+
+    decorators = [auth.login_required]
 
     def delete(self):
 

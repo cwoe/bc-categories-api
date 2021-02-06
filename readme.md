@@ -10,6 +10,6 @@ This can be used to automatically resolve white-/blacklisting related tickets, i
 
 Path | Method | Auth | Parameters
 --- | --- | --- | ---
-/categories.txt | GET | None | 
+/categories.txt | GET | None |
 /add | POST | Basic | category, domain
-/remove | DELETE | Basic | category. domain
+/remove | DELETE | Basic | category, domain
