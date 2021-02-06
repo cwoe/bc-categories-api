@@ -17,10 +17,10 @@ Path | Method | Auth | Parameters
 ## Examples
 
 ### Get current Categories Database
-curl http://localhost:5000/categories.txt
+`curl http://localhost:5000/categories.txt`
 
 ### Add a domain
-curl -X POST http://localhost:5000/add -F 'domain=cwoellner.com' -F 'category=HTTP_whitelist' --user admin:admin
+`curl -X POST http://localhost:5000/add -F 'domain=cwoellner.com' -F 'category=HTTP_whitelist' --user admin:admin`
 
 ### Remove a domain
-curl -X DELETE http://localhost:5000/remove -F 'domain=cwoellner.com' -F 'category=HTTP_whitelist' --user admin:admin
+`curl -X DELETE http://localhost:5000/remove -F 'domain=cwoellner.com' -F 'category=HTTP_whitelist' --user admin:admin`
