@@ -67,7 +67,7 @@ class Edit(Resource):
         parser.add_argument('domain', required=True)
         return parser
 
-    def getDomainName(self, domain):
+    def get_domain_name(self, domain):
         """Try to extract Domain name and remove bad arguments"""
         if '/' in domain:
             domain = urlparse(domain).netloc
@@ -82,7 +82,7 @@ class Edit(Resource):
         parser = self.parse()
         args = parser.parse_args()
 
-        if not self.getDomainName(args['domain']):
+        if not self.get_domain_name(args['domain']):
             return {'message': 'Domain can not be parsed', 'data': args}, 400
 
         cat_dict = parse_file()
@@ -100,7 +100,7 @@ class Edit(Resource):
         parser = self.parse()
         args = parser.parse_args()
 
-        if not self.getDomainName(args['domain']):
+        if not self.get_domain_name(args['domain']):
             return {'message': 'Domain can not be parsed', 'data': args}, 400
 
         cat_dict = parse_file()
