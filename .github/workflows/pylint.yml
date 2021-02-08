@@ -18,9 +18,6 @@ jobs:
         python -m pip install --upgrade pip
         pip install pylint
         pip install -r requirements.txt
-    - name: Install dependencies
-      run: |
-        find .
     - name: Analysing the code with pylint
       run: |
-        pylint --rcfile=.github\workflows\standart.rc `find . | grep .py$ | xargs`
+        pylint --rcfile=./.github/workflows/standart.rc `find . | grep .py$ | xargs`
