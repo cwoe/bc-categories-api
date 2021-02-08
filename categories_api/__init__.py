@@ -15,7 +15,7 @@ auth = HTTPBasicAuth()
 @app.route('/categories.txt')
 def serve_file():
     """Return the current categories.txt"""
-    return open('/usr/src/app/categories.txt', 'r').read()
+    return open('./categories.txt', 'r').read()
 
 @auth.verify_password
 def verify_password(username, password):
@@ -29,7 +29,7 @@ def verify_password(username, password):
 def parse_file():
     """Parse the contents of categories.txt into a dictionary"""
     results = {}
-    with open('/usr/src/app/categories.txt', 'r') as cat_file:
+    with open('./categories.txt', 'r') as cat_file:
         cur_cat = None
         for line in cat_file:
             match = re.search(r'(?<=define\ category\ )\w+', line)
@@ -49,29 +49,40 @@ def parse_file():
 
 def encode_file(content):
     """Turn a dictionary into a valid categories file"""
-    with open('/usr/src/app/categories.txt', 'w') as cat_file:
+    with open('./categories.txt', 'w') as cat_file:
         for key in content:
             cat_file.write("define category "+key+"\n")
             for domain in content[key]:
                 cat_file.write("      "+domain+"\n")
             cat_file.write("end\n\n")
 
-class Add(Resource):
-    """For /add Path"""
+class Edit(Resource):
+    """For /edit Path"""
     decorators = [auth.login_required]
+
+    def parse(self):
+        """Parse given arguments"""
+        parser = reqparse.RequestParser()
+        parser.add_argument('category', required=True)
+        parser.add_argument('domain', required=True)
+        return parser
+
+    def getDomainName(self, domain):
+        """Try to extract Domain name and remove bad arguments"""
+        if '/' in domain:
+            domain = urlparse(domain).netloc
+        if not re.match(r'^[A-Za-z0-9.]+$', domain):
+            return ""
+        if '.' not in domain:
+            return ""
+        return domain
 
     def post(self):
         """Add a new domain to a existing Category"""
-        parser = reqparse.RequestParser()
-
-        parser.add_argument('category', required=True)
-        parser.add_argument('domain', required=True)
-
+        parser = self.parse()
         args = parser.parse_args()
 
-        if '/' in args['domain']:
-            args['domain'] = urlparse(args['domain']).netloc
-        if not args['domain'] or '.' not in args['domain']:
+        if not self.getDomainName(args['domain']):
             return {'message': 'Domain can not be parsed', 'data': args}, 400
 
         cat_dict = parse_file()
@@ -84,22 +95,12 @@ class Add(Resource):
             return {'message': 'Domain already in Category', 'data': args}, 400
         return {'message': 'Category invalid', 'data': args}, 400
 
-class Remove(Resource):
-    """For /remove path"""
-    decorators = [auth.login_required]
-
     def delete(self):
         """Remove a domain from a existing Category"""
-        parser = reqparse.RequestParser()
-
-        parser.add_argument('category', required=True)
-        parser.add_argument('domain', required=True)
-
+        parser = self.parse()
         args = parser.parse_args()
 
-        if '/' in args['domain']:
-            args['domain'] = urlparse(args['domain']).netloc
-        if not args['domain'] or '.' not in args['domain']:
+        if not self.getDomainName(args['domain']):
             return {'message': 'Domain can not be parsed', 'data': args}, 400
 
         cat_dict = parse_file()
@@ -112,5 +113,4 @@ class Remove(Resource):
             return {'message': 'Domain not in Category', 'data': args}, 400
         return {'message': 'Category invalid', 'data': args}, 400
 
-api.add_resource(Add, '/add')
-api.add_resource(Remove, '/remove')
+api.add_resource(Edit, '/edit')
