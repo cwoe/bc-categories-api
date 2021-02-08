@@ -24,7 +24,7 @@ def verify_password(username, password):
     if username in key_list:
         if check_password_hash(users.users[username], password):
             return username
-    return
+    return None
 
 def parse_file():
     """Parse the contents of categories.txt into a dictionary"""
@@ -77,10 +77,10 @@ class Add(Resource):
 
         cat_dict = parse_file()
 
-        key_list = list(a.keys())
+        key_list = list(cat_dict.keys())
         if args['category'] in key_list:
             if args['domain'] not in cat_dict[args['category']]:
-                a[args['category']].append(args['domain'])
+                cat_dict[args['category']].append(args['domain'])
                 encode_file(cat_dict)
                 return {'message': 'Domain added', 'data': args}, 201
             return {'message': 'Domain already in Category', 'data': args}, 400
@@ -106,10 +106,10 @@ class Remove(Resource):
 
         cat_dict = parse_file()
 
-        key_list = list(a.keys())
+        key_list = list(cat_dict.keys())
         if args['category'] in key_list:
             if args['domain'] in cat_dict[args['category']]:
-                a[args['category']].remove(args['domain'])
+                cat_dict[args['category']].remove(args['domain'])
                 encode_file(cat_dict)
                 return {'message': 'Domain removed', 'data': args}, 200
             return {'message': 'Domain not in Category', 'data': args}, 400
