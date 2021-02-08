@@ -11,8 +11,8 @@ This can be used to automatically resolve white-/blacklisting related tickets, i
 Path | Method | Auth | Parameters
 --- | --- | --- | ---
 /categories.txt | GET | None |
-/add | POST | Basic | category, domain
-/remove | DELETE | Basic | category, domain
+/edit | POST | Basic | category, domain
+/edit | DELETE | Basic | category, domain
 
 ## Examples
 
@@ -20,7 +20,7 @@ Path | Method | Auth | Parameters
 `curl http://localhost:5000/categories.txt`
 
 ### Add a domain
-`curl -X POST http://localhost:5000/add -F 'domain=cwoellner.com' -F 'category=HTTP_whitelist' --user admin:admin`
+`curl -X POST http://localhost:5000/edit -F 'domain=cwoellner.com' -F 'category=HTTP_whitelist' --user admin:admin`
 
 ### Remove a domain
-`curl -X DELETE http://localhost:5000/remove -F 'domain=cwoellner.com' -F 'category=HTTP_whitelist' --user admin:admin`
+`curl -X DELETE http://localhost:5000/edit -F 'domain=cwoellner.com' -F 'category=HTTP_whitelist' --user admin:admin`
