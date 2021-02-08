@@ -49,9 +49,8 @@ def parse_file():
 
 def encode_file(content):
     """Turn a dictionary into a valid categories file"""
-    key_list = list(content.keys())
     with open('/usr/src/app/categories.txt', 'w') as cat_file:
-        for key in key_list:
+        for key in content:
             cat_file.write("define category "+key+"\n")
             for domain in content[key]:
                 cat_file.write("      "+domain+"\n")
@@ -77,8 +76,7 @@ class Add(Resource):
 
         cat_dict = parse_file()
 
-        key_list = list(cat_dict.keys())
-        if args['category'] in key_list:
+        if args['category'] in cat_dict:
             if args['domain'] not in cat_dict[args['category']]:
                 cat_dict[args['category']].append(args['domain'])
                 encode_file(cat_dict)
@@ -106,8 +104,7 @@ class Remove(Resource):
 
         cat_dict = parse_file()
 
-        key_list = list(cat_dict.keys())
-        if args['category'] in key_list:
+        if args['category'] in cat_dict:
             if args['domain'] in cat_dict[args['category']]:
                 cat_dict[args['category']].remove(args['domain'])
                 encode_file(cat_dict)
