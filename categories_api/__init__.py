@@ -45,7 +45,7 @@ def parse_file():
                     match = line.strip()
                     if match and cur_cat:
                         results[cur_cat].append(match)
-    return(results)
+    return results
 
 def encode_file(content):
     """Turn a dictionary into a valid categories file"""
