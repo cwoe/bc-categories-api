@@ -71,7 +71,7 @@ class Edit(Resource):
         """Try to extract Domain name and remove bad arguments"""
         if '/' in domain:
             domain = urlparse(domain).netloc
-        if not re.match(r'^[A-Za-z0-9.]+$', domain):
+        if not re.match(r'^[A-Za-z0-9.\-]+$', domain):
             return ""
         if '.' not in domain:
             return ""
