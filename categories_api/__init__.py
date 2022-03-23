@@ -15,7 +15,7 @@ auth = HTTPBasicAuth()
 @app.route('/categories.txt')
 def serve_file():
     """Return the current categories.txt"""
-    return open('./categories.txt', 'r').read()
+    return open('./categories.txt', 'r', encoding='utf8').read()
 
 @auth.verify_password
 def verify_password(username, password):
@@ -29,7 +29,7 @@ def verify_password(username, password):
 def parse_file():
     """Parse the contents of categories.txt into a dictionary"""
     results = {}
-    with open('./categories.txt', 'r') as cat_file:
+    with open('./categories.txt', 'r', encoding='utf8') as cat_file:
         cur_cat = None
         for line in cat_file:
             match = re.search(r'(?<=define\ category\ )\w+', line)
@@ -49,7 +49,7 @@ def parse_file():
 
 def encode_file(content):
     """Turn a dictionary into a valid categories file"""
-    with open('./categories.txt', 'w') as cat_file:
+    with open('./categories.txt', 'w', encoding='utf8') as cat_file:
         for key in content:
             cat_file.write("define category "+key+"\n")
             for domain in content[key]:
